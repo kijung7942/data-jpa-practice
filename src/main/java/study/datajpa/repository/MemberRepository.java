@@ -8,6 +8,7 @@ import study.datajpa.entity.Member;
 
 import javax.persistence.NamedQuery;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -24,4 +25,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select new study.datajpa.dto.MemberDto(m.id, m.username, m.team.name) from Member m join m.team t")
     List<MemberDto> findMemberDto();
+
+    @Query("select m from Member m where m.username in :names")
+    List<Member> findByNames(@Param("names") List<String> names);
+
+
+    List<Member> findListByUsername(String username); // 컬렉션
+    Member findMemberByUsername(String username); // 단건
+    Optional<Member> findOptionalByUsername(String username); // 옵셔널
 }

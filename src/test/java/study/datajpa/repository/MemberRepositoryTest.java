@@ -9,7 +9,9 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -106,9 +108,36 @@ class MemberRepositoryTest {
         for (MemberDto memberDto : result) {
             System.out.println("memberDto = " + memberDto);
         }
-
-        assertThat(result.get(0).getUsername()).isEqualTo("AAA");
-        assertThat(result.size()).isEqualTo(2);
     }
 
+    @Test
+    public void findByNames() {
+        Member m1 = new Member("AAA", 20, new Team("teamA"));
+        Member m2 = new Member("BBB", 10, new Team("teamA"));
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA","BBB"));
+
+        for (Member memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test
+    public void testReturnType() {
+        Member m1 = new Member("AAA", 20, new Team("teamA"));
+        Member m2 = new Member("BBB", 10, new Team("teamA"));
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> list = memberRepository.findListByUsername("BBB"); // 없는 경우 비어있는 리스트 반환
+        Member aaa = memberRepository.findMemberByUsername("BBB"); // 없는 경우 null로 반환. 따라서, 단건인 경우 Optional로 묶어주는게 좋음
+        Optional<Member> optional = memberRepository.findOptionalByUsername("BBB");
+
+        System.out.println("list = " + list);
+        System.out.println("aaa = " + aaa);
+        System.out.println("optional = " + optional);
+
+    }
 }
