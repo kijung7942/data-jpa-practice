@@ -69,6 +69,27 @@ class MemberJpaRepositoryTest {
         assertThat(result.get(0).getUsername()).isEqualTo("AAA");
         assertThat(result.get(0).getAge()).isEqualTo(20);
         assertThat(result.size()).isEqualTo(1);
+    }
 
+    @Test
+    public void paging() {
+        // given
+        memberJpaRepository.save(new Member("member1", 10, new Team("teamA")));
+        memberJpaRepository.save(new Member("member1", 10, new Team("teamA")));
+        memberJpaRepository.save(new Member("member1", 10, new Team("teamA")));
+        memberJpaRepository.save(new Member("member1", 10, new Team("teamA")));
+        memberJpaRepository.save(new Member("member1", 10, new Team("teamA")));
+
+        int age = 10;
+        int offset = 1;
+        int limit = 3;
+
+        // when
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
+        long totalCount = memberJpaRepository.totalCount(age);
+
+        // then
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(totalCount).isEqualTo(5);
     }
 }
