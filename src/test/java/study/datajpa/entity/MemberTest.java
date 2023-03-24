@@ -1,5 +1,7 @@
 package study.datajpa.entity;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -44,10 +46,9 @@ class MemberTest {
         // 확인
         List<Member> findMembers = em.createQuery("select m from Member m", Member.class).getResultList();
 
-        for (Member findMember : findMembers) {
-            System.out.println("findMember = " + findMember);
-            System.out.println("findMember.getTeam() = " + findMember.getTeam());
-        }
+        assertThat(findMembers.size()).isEqualTo(4);
+        assertThat(findMembers.stream().filter(m-> m.getTeam().getName().equals("teamA")).count()).isEqualTo(2);
+        assertThat(findMembers.stream().filter(m-> m.getTeam().getName().equals("teamB")).count()).isEqualTo(2);
 
     }
 }
