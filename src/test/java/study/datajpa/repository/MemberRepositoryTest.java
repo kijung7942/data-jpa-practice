@@ -13,6 +13,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,8 @@ class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
+    @PersistenceContext
+    private EntityManager em;
 
     @Test
     public void basicCRUD() {
@@ -171,5 +175,26 @@ class MemberRepositoryTest {
         assertThat(page.getTotalPages()).isEqualTo(2);
         assertThat(page.isFirst()).isTrue();
         assertThat(page.hasNext()).isTrue();
+    }
+
+    @Test
+    public void bulkUpdate() {
+        memberRepository.save(new Member("member1", 10, new Team("teamA")));
+        memberRepository.save(new Member("member2", 19, new Team("teamA")));
+        memberRepository.save(new Member("member3", 20, new Team("teamA")));
+        memberRepository.save(new Member("member4", 21, new Team("teamA")));
+        Member member = new Member("member5", 40, new Team("teamA"));
+        memberRepository.save(member);
+
+        // when
+        int resultCount = memberRepository.bulkAgePlus(20);
+//        em.flush();
+//        em.clear();
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+        System.out.println("findMember.getAge() = " + findMember.getAge());
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
     }
 }
